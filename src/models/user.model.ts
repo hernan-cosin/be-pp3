@@ -55,13 +55,7 @@ export const getDashboard = async (fechaInicio:string,  fechaFin:string) => {
       return acc;
     }, [] as { mes: string; turnos: number; ingresos: number }[]);
 
-    console.log("DASHBOARD",{
-      periodo: { desde: fechaInicio, hasta: fechaFin },
-      talleresNuevos,
-      turnosReservados,
-      totalIngresos,
-      resumenPorMes,
-    })
+    
   return {
       periodo: { desde: fechaInicio, hasta: fechaFin },
       talleresNuevos,
@@ -244,24 +238,8 @@ export const deleteUser = async (id: number) => {
   await pool.query("DELETE FROM usuarios WHERE id = $1", [id]);
 };
 
-type data = {
-      id: number;
-      nombre: string;
-      apellido: string;
-      email: string;
-      telefono: string;
-      contrasena: string;
-      rol_id: number
-    }
-
-
 export const getProfile = async (id: number) => {
   const { data, error } = await getUserById(id);
-  // await supabase
-  // .from("usuarios")
-  // .select("*")
-  // .eq("id", id)
-  // .single();
 
   return { data, error };
 };
@@ -448,7 +426,6 @@ await supabase
 export const getShopAppointments = async(usuario_id:number)=>{
   const getTallerId = await supabase.from("talleres").select("id").eq("usuario_id", usuario_id);
   const tallerId = getTallerId.data?.[0].id;
-// return console.log("TALLER IDD",getTallerId.data?.[0].id);
 
   const { data, error } = await supabase
         .from("turnos")

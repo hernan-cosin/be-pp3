@@ -2,12 +2,12 @@ import { Request, Response } from "express";
 import * as User from "../models/user.model";
 import { comparePassword } from "../utils/hash.utils";
 import { signToken, verifyToken } from "../utils/jwt.utils";
+import { sendEmail } from "../utils/sendEmail";
 
 export const getDashboard = async (req: Request, res: Response) => { 
   const { desde, hasta } = req.query; 
 
   const fechaInicio = desde || "2025-01-01";
-  // const fechaFin = hasta || new Date().toISOString().split("T")[0];
   const fechaFin = hasta || "2025-12-31";
 
   const  {
@@ -189,6 +189,18 @@ export const createAppointment = async (req: Request, res: Response) => {
     const hora = req.body.hora;
     
     const { data, error } = await User.createAppointment(user.id,taller, fecha, hora)
+
+    await sendEmail(
+      user.email,
+      "Confirmación de tu reserva",
+      `
+        <h2>Reserva confirmada</h2>
+        <p>Tu turno en el taller <strong>${taller}</strong> ha sido confirmado.</p>
+        <p><strong>Fecha:</strong> ${fecha}</p>
+        <p><strong>Hora:</strong> ${hora}</p>
+        <p>Gracias por utilizar nuestro servicio 🚗</p>
+      `
+    );
       
     if (error) {
       res.status(400).json({error: "Hubo un error " + error})
