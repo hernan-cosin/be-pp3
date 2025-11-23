@@ -79,6 +79,18 @@ export const getTalleres = async (req: Request, res: Response) => {
   res.status(200).json(data);
 }
 
+export const updateTaller = async (req: Request, res: Response) => {
+    const { id } = req.params;
+  const { estado } = req.body;
+
+  const {data, error} = await User.updateTaller(id, estado);
+  if (error) {
+    res.status(400).json(error)
+  }console.log(error, data);
+  
+  res.status(200).json(data)
+      
+}
 export const getBarriosById = async (req: Request, res: Response) => {
   const barrioId = req.params.id
   const talleresByBarrio = await User.getTalleresByBarrioId(parseInt(barrioId))

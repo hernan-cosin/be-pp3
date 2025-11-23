@@ -131,10 +131,22 @@ export const getTalleres = async ()=>{
     barrio_id,
     latitud,
     longitud,
+    estado,
     barrio_id(nombre)`)
       .order("barrio_id", { ascending: true });
 
   return { data, error };
+}
+
+export const updateTaller = async (id: string, estado:boolean)=>{
+const { data, error } = await supabase
+    .from("talleres")
+    .update({ estado })
+    .eq("id", id)
+    .select()
+    .single();
+return {data, error}
+
 }
 
 export const getTalleresByBarrioId = async (id:number)=>{

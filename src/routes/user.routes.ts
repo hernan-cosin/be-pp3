@@ -12,6 +12,7 @@ router.get("/mecanicos/:id", UserController.getMechanic);
 router.get("/turnos/mis-reservas", verificarToken, UserController.getAppointmentsByUser);
 router.get("/barrios", UserController.getBarrios);
 router.get("/talleres", UserController.getTalleres);
+router.put("/talleres/:id", UserController.updateTaller);
 router.get("/mecanicos/barrio/:id", UserController.getBarriosById);
 router.post("/login", UserController.loginUser);
 router.get("/mecanicos/turnos/:taller_id{/:fecha}", UserController.getAvailableDates);
