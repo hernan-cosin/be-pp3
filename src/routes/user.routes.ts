@@ -5,6 +5,8 @@ import { verificarToken } from "../middlewares/auth.middleware";
 const router = Router();
 
 router.get("/dashboard", UserController.getDashboard);
+router.get("/dashboard/resumen-turnos", UserController.getDashboardAppointmentsByShop);
+router.get("/dashboard/resumen-por-taller", UserController.getResumeByShop)
 router.get("/usuarios", UserController.getUsers);
 router.get("/mecanicos", UserController.getMechanics);
 router.get("/usuario/:id", UserController.getUser);

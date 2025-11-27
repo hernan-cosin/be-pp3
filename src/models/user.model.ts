@@ -65,6 +65,94 @@ export const getDashboard = async (fechaInicio:string,  fechaFin:string) => {
     };
 };
 
+export const getDashboardAppointmentsByShop = async ()=> {
+    const { data, error } = await supabase
+      .from("turnos")
+      .select(`
+        id,
+        fecha,
+        hora,
+        usuarios:cliente_id (
+          id,
+          nombre,
+          apellido,
+          email
+        ),
+        talleres:taller_id (
+          id,
+          nombre_taller
+        )
+      `);
+
+        return { data, error };
+} 
+export const getResumeByShop = async () => {
+  // Traemos talleres
+  const { data: talleres, error: talleresError } = await supabase
+    .from("talleres")
+    .select("id, nombre_taller");
+
+  // Traemos turnos
+  const { data: turnos, error: turnosError } = await supabase
+    .from("turnos")
+    .select("id, taller_id, monto_asignado, fecha");
+
+  // 3. Procesar datos agrupados por taller y mes
+  const resumen: any[] = [];
+
+  talleres?.forEach((taller) => {
+    const turnosDelTaller = turnos?.filter(
+      (t) => t.taller_id === taller.id
+    );
+
+    const agrupadoPorMes: Record<string, { cantidad: number; total: number }> = {};
+
+    turnosDelTaller?.forEach((t) => {
+      const mes = t?.fecha.substring(0, 7); // "YYYY-MM"
+
+      if (!agrupadoPorMes[mes]) {
+        agrupadoPorMes[mes] = {
+          cantidad: 0,
+          total: 0,
+        };
+      }
+
+      agrupadoPorMes[mes].cantidad += 1;
+      agrupadoPorMes[mes].total += t.monto_asignado || 0;
+    });
+
+    // Convertir objeto → array final
+    Object.entries(agrupadoPorMes).forEach(([mes, valores]: any) => {
+      resumen.push({
+        taller_id: taller.id,
+        taller: taller.nombre_taller,
+        mes,
+        cantidad_turnos: valores.cantidad,
+        monto_recaudado: valores.total,
+      });
+    });
+
+  // // Agrupamos manualmente
+  // const resumen = talleres?.map((taller) => {
+  //   const turnosDeTaller = turnos?.filter(t => t.taller_id === taller.id);
+
+  //   const cantidad_turnos = turnosDeTaller?.length;
+  //   const monto_recaudado = turnosDeTaller?.reduce(
+  //     (sum, t) => sum + (t.monto_asignado || 0),
+  //     0
+  //   );
+
+  //   return {
+  //     taller_id: taller.id,
+  //     taller: taller.nombre_taller,
+  //     cantidad_turnos,
+  //     monto_recaudado,
+  //   };
+  });
+  return {resumen}
+
+};
+
 export const getAllUsers = async () => {
   const { data, error } = await supabase.from("usuarios").select();
 
@@ -157,6 +245,7 @@ export const getTalleresByBarrioId = async (id:number)=>{
     barrio_id,
     latitud,
     longitud,
+    estado,
     barrio_id(nombre)`).eq("barrio_id", id);
 return {data,error}
 }

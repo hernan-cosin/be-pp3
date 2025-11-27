@@ -27,6 +27,20 @@ export const getDashboard = async (req: Request, res: Response) => {
     });
 };
 
+export const getDashboardAppointmentsByShop = async (req: Request, res: Response) => {
+    const { data, error } = await User.getDashboardAppointmentsByShop();
+
+  res.json(data);
+}
+
+export const getResumeByShop = async (req: Request, res: Response) => {
+    const { resumen } = await User.getResumeByShop();
+
+  res.json(resumen);
+}
+
+
+
 export const getUsers = async (_req: Request, res: Response) => {
   const { data, error } = await User.getAllUsers();
 
